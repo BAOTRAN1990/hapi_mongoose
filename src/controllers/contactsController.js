@@ -8,7 +8,7 @@ const getContact = (request, reply) => {
     contactService
         .getContact(id, contactsRepositoryObj.getContact)
         .then(contact => {
-            reply(contact);
+            return reply(contact);
         })
         .catch(error => {
             if(error.code === 'NoSuchContact'){
