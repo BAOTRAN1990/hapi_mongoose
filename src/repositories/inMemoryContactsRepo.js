@@ -1,68 +1,26 @@
-const uuidV1 = require('uuid/v1');
-const { asPromise } = require('../utils');
+var Contact = require('../models/ContactModel');
 
+const getContact = (id) => Contact.findById(id);
 
-module.exports = class ContactsRepo {
-    constructor(contacts = []){
-        this.contacts = contacts;
-        this.getContact = this.getContact.bind(this);
-        this.getContacts = this.getContacts.bind(this);
-        this.addContact = this.addContact.bind(this);
-        this.updateContact = this.updateContact.bind(this);
-        this.removeContact = this.removeContact.bind(this);
-    }
+const getContacts = () => Contact.find();
 
-    getContact(id) {
-        const contactFound = this.contacts.find(contact => contact._id === id);
-        return asPromise(null, contactFound);
-    }
+const addContact = (newContact) => {
+    const contactToAdd = Contact({
+        firstName: newContact.firstName,
+        lastName: newContact.lastName,
+        age: newContact.age
+     });
+    return contactToAdd.save();
+}
 
-    getContacts(){
-        return asPromise(null, this.contacts);
-    }
+const updateContact = (id, updatedContact) => Contact.findByIdAndUpdate(id, updatedContact);
 
-    addContact(newContact){
-        const id = uuidV1();
-        const contactToAdd = {
-            _id: id,
-            firstName: newContact.firstName,
-            lastName: newContact.lastName,
-            age: newContact.age
-        };
+const removeContact = (id) => Contact.findByIdAndRemove(id);
 
-        this.contacts.push(contactToAdd);
-        return asPromise(null, {id});
-    }
-
-    updateContact(id, updatedContact){
-        const contactToUpdate = this.contacts.find(contact => contact._id === id);
-        if(contactToUpdate){
-            contactToUpdate.firstName = updatedContact.firstName;
-            contactToUpdate.lastName = updatedContact.lastName;
-            contactToUpdate.age = updatedContact.age;
-
-            return asPromise();
-        }else{
-            return asPromise({
-                message: `Can't find contact with id: ${id}`,
-                code: 'NoSuchContact'
-            }, null)
-        }
-    }
-
-    removeContact(id){
-        const contactToRemove = this.contacts.find(contact => contact._id === id);
-        if(contactToRemove){
-            const indexToRemove = this.contacts.indexOf(contactToRemove);
-            this.contacts.splice(indexToRemove, 1);
-            return asPromise();
-        }else{
-            return asPromise({
-                message: `Can't find contact with id: ${id}`,
-                code: 'NoSuchContact'
-            }, null)
-        }
-        
-
-    }
+module.exports = {
+    getContact,
+    getContacts,
+    addContact,
+    updateContact,
+    removeContact
 };

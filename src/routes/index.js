@@ -1,6 +1,6 @@
 const contactsController = require('../controllers/contactsController');
 
-const configureRoutes = () => {
+const configureRoutes = (mongoose) => {
 
     return [
         {

@@ -1,14 +1,15 @@
-const ContactsRepository = require('../repositories/inMemoryContactsRepo');
+const contactsRepositoryObj = require('../repositories/inMemoryContactsRepo');
 const contactService = require('../services/contactsService');
 const Boom = require('Boom');
-const contactsRepo = new ContactsRepository(); //==>Dummy repo for now
 
 const getContact = (request, reply) => {
     const id = request.params.id;
 
     contactService
-        .getContact(id, contactsRepo.getContact)
-        .then(contact => reply(contact))
+        .getContact(id, contactsRepositoryObj.getContact)
+        .then(contact => {
+            reply(contact);
+        })
         .catch(error => {
             if(error.code === 'NoSuchContact'){
                 return reply(Boom.notFound('Contact not found', error));
@@ -20,16 +21,15 @@ const getContact = (request, reply) => {
 
 const getContacts = (request, reply) => {
     return contactService
-        .getContacts(contactsRepo.getContacts)
+        .getContacts(contactsRepositoryObj.getContacts)
         .then(contacts => reply(contacts))
         .catch(error => reply(Boom.badImplementation('Failed to get contacts', error)));
 };
 
 const createContact = (request, reply) => {
     const contact = request.payload;
-
     contactService
-        .addContact(contact, contactsRepo.addContact)
+        .addContact(contact, contactsRepositoryObj.addContact)
         .then(contact => reply(contact).code(201))
         .catch(error => reply(Boom.badImplementation('Failed to get contact', error)));
 };
@@ -39,8 +39,8 @@ const updateContact = (request, reply) => {
     const contact = request.payload;
 
     contactService
-        .updateContact(id, contact, contactsRepo.updateContact)
-        .then(() => reply())
+        .updateContact(id, contact, contactsRepositoryObj.updateContact)
+        .then(() => reply({message: 'Contact updated successfully.'}))
         .catch(error => {
             if(error.code === 'NoSuchContact'){
                 return reply(Boom.notFound('Contact not found', error));
@@ -54,8 +54,8 @@ const deleteContact = (request, reply) => {
     const id = request.params.id;
 
     contactService
-        .removeContact(id, contactsRepo.removeContact)
-        .then(reply().code(204))
+        .removeContact(id, contactsRepositoryObj.removeContact)
+        .then(() => reply().code(204))
         .catch(error => {
             if(error.code === 'NoSuchContact'){
                 return reply(Boom.notFound('Contact not found', error));

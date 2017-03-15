@@ -3,6 +3,7 @@ const configureRoutes = require('./src/routes');
 
 const hostname = 'localhost';
 const port = 3000;
+var db = require('./config/db');
 
 const server = new Hapi.Server();
 server.connection({

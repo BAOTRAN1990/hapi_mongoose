@@ -15,11 +15,11 @@ const toContact = (persistedContact) => {
 };
 
 const getContact = (id, loadById) => {
-    return loadById(id).then(toContact);
+    return loadById(id).then(contact => toContact(contact));
 };
 
 const getContacts = (load) => {
-    return load().then(persistedContacts => persistedContacts.map(toContact))
+    return load().then(contacts => contacts.map(contact => toContact(contact)));
 };
 
 const addContact = (contact, save) => {
@@ -28,8 +28,7 @@ const addContact = (contact, save) => {
         lastName: contact.lastName,
         age: contact.age
     };
-
-    return save(newContact)
+    return save(newContact).then(savedContact => toContact(savedContact));
 };
 
 const updateContact = (id, contact, update) => {
@@ -38,12 +37,11 @@ const updateContact = (id, contact, update) => {
         lastName: contact.lastName,
         age: contact.age
     };
-
-    return update(id, updatedContact)
+    return update(id, updatedContact).then(oldContactHasBeenUpdated => toContact(oldContactHasBeenUpdated));
 };
 
 const removeContact = (id, remove) => {
-    return remove(id)
+    return remove(id).then(oldContactHasBeenDeleted => toContact(oldContactHasBeenDeleted));
 };
 
 module.exports = {
